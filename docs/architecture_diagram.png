@@ -1,0 +1,90 @@
+# Architecture Diagram Placeholder
+
+This file represents the architecture diagram for the ARL-QDCC system.
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    ARL-QDCC SYSTEM ARCHITECTURE                  │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│              Layer 5: Performance Evaluation & Feedback          │
+│  ┌──────────────┐  ┌──────────────┐  ┌───────────────────────┐ │
+│  │   Metrics    │  │  Evaluator   │  │  Baseline Comparison  │ │
+│  │   Tracking   │  │              │  │                       │ │
+│  └──────────────┘  └──────────────┘  └───────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                              ↑ Feedback
+┌─────────────────────────────────────────────────────────────────┐
+│              Layer 4: Adaptive Control Layer                     │
+│  ┌──────────────────────┐    ┌─────────────────────────────┐   │
+│  │  Adaptive Protocol   │    │  Repeater Placement         │   │
+│  │  - Purification      │    │  - Optimization             │   │
+│  │  - Power Control     │    │  - Cost Management          │   │
+│  └──────────────────────┘    └─────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+                              ↑ Control Actions
+┌─────────────────────────────────────────────────────────────────┐
+│         Layer 3: Reinforcement Learning Intelligence             │
+│  ┌────────────┐  ┌────────────┐  ┌───────────────────────────┐ │
+│  │  RL Agent  │  │   Policy   │  │   Reward Function        │ │
+│  │  (PPO/A2C) │  │  Network   │  │   (Multi-objective)      │ │
+│  └────────────┘  └────────────┘  └───────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                              ↑ State / ↓ Action
+┌─────────────────────────────────────────────────────────────────┐
+│         Layer 2: Quantum Channel Simulation Layer                │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
+│  │   Channel    │  │  Noise Models│  │  Metrics Calculator  │  │
+│  │   Physics    │  │  - Depolar.  │  │  - Fidelity          │  │
+│  │   - Loss     │  │  - Damping   │  │  - Success Rate      │  │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                              ↑ Channel State
+┌─────────────────────────────────────────────────────────────────┐
+│         Layer 1: Transmission Environment Layer                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │   Quantum Network Environment (Gymnasium Interface)       │   │
+│  │   - State Space: Node + Channel + Entanglement States    │   │
+│  │   - Action Space: Generate, Swap, Purify, Control        │   │
+│  │   - Episode Management & Reset                           │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    Configuration & Utilities                     │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
+│  │   Config     │  │    Logger    │  │     Helpers          │  │
+│  │   Files      │  │              │  │                      │  │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Data Flow
+
+1. **Initialization**: Load configurations → Initialize environment → Create RL agent
+2. **Training Loop**:
+   - Environment provides state observation
+   - RL agent selects action (using policy network)
+   - Environment executes action → updates physics
+   - Reward function computes multi-objective reward
+   - Policy updated based on reward
+3. **Evaluation**: Trained agent tested against baselines on various scenarios
+
+## Key Interactions
+
+- **RL Agent ↔ Environment**: State-action-reward loop
+- **Control Layer ← RL Agent**: Action interpretation and protocol adjustment
+- **Channel Layer → Environment**: Physics simulation and state updates
+- **Evaluation Layer ← All Layers**: Performance monitoring and comparison
+
+---
+
+For detailed implementation, see docs/explanation_notes.md
+For the actual generated diagram, create using tools like:
+- draw.io
+- PlantUML
+- Python matplotlib/networkx
+- Visio/Lucidchart

@@ -1,0 +1,48 @@
+# Quantum Communication Simulation Configuration
+
+# Network parameters
+network:
+  num_nodes: 10
+  topology: "linear"  # Options: linear, star, mesh, custom
+  distance_range: [10, 100]  # km
+
+# Quantum channel parameters
+quantum_channel:
+  fiber_loss_coefficient: 0.2  # dB/km
+  depolarizing_rate: 0.01
+  dephasing_rate: 0.005
+  
+# Noise models
+noise:
+  enable_noise: true
+  noise_model: "depolarizing"  # Options: depolarizing, amplitude_damping, phase_damping
+  gate_error_rate: 0.001
+  measurement_error_rate: 0.01
+  
+# Quantum repeater parameters
+repeater:
+  enable_repeaters: true
+  max_repeaters: 5
+  swap_success_probability: 0.98
+  memory_coherence_time: 1.0  # seconds
+  
+# Entanglement parameters
+entanglement:
+  initial_fidelity: 0.99
+  target_fidelity: 0.95
+  purification_enabled: true
+  distillation_rounds: 2
+  
+# Simulation settings
+simulation:
+  time_slots: 1000
+  max_episode_steps: 500
+  random_seed: 42
+  parallel_simulations: 1
+  
+# Performance metrics
+metrics:
+  track_fidelity: true
+  track_throughput: true
+  track_latency: true
+  track_success_rate: true
