@@ -129,7 +129,8 @@ class RLAgent:
     
     def train(self, timesteps: Optional[int] = None, 
               eval_freq: Optional[int] = None,
-              save_path: str = 'results/model'):
+              save_path: str = 'results/model',
+              reset_num_timesteps: bool = True):
         """
         Train the RL agent (FR-10: Policy Update Mechanism)
         
@@ -137,6 +138,7 @@ class RLAgent:
             timesteps: Number of timesteps to train
             eval_freq: Frequency of evaluation
             save_path: Path to save model checkpoints
+            reset_num_timesteps: Whether to reset timestep counter in SB3
         """
         training_config = self.config.get('training', {})
         
@@ -168,17 +170,33 @@ class RLAgent:
         )
         
         callbacks = [eval_callback, checkpoint_callback]
+        start_steps = getattr(self.model, 'num_timesteps', 0)
+        interrupted = False
         
         # Train
         print(f"Starting training for {timesteps} timesteps...")
-        self.model.learn(
-            total_timesteps=timesteps,
-            callback=callbacks,
-            tb_log_name=self.config.get('algorithm', 'PPO')
-        )
+        try:
+            self.model.learn(
+                total_timesteps=timesteps,
+                callback=callbacks,
+                tb_log_name=self.config.get('algorithm', 'PPO'),
+                reset_num_timesteps=reset_num_timesteps
+            )
+        except KeyboardInterrupt:
+            interrupted = True
+            interrupted_steps = getattr(self.model, 'num_timesteps', self.total_timesteps)
+            interrupt_path = f"{save_path}/checkpoints/rl_model_interrupted_{interrupted_steps}_steps"
+            self.model.save(interrupt_path)
+            print("\nTraining interrupted by user.")
+            print(f"Interrupt checkpoint saved to {interrupt_path}.zip")
         
-        self.total_timesteps += timesteps
-        print(f"Training complete! Total timesteps: {self.total_timesteps}")
+        end_steps = getattr(self.model, 'num_timesteps', start_steps)
+        self.total_timesteps += max(0, end_steps - start_steps)
+
+        if interrupted:
+            print(f"Training stopped early. Total timesteps: {self.total_timesteps}")
+        else:
+            print(f"Training complete! Total timesteps: {self.total_timesteps}")
     
     def predict(self, observation, deterministic: bool = True):
         """

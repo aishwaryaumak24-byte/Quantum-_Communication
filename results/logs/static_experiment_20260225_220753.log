@@ -1,0 +1,2 @@
+2026-02-25 22:07:53 - experiment.static_experiment - INFO - Starting experiment: static_experiment
+2026-02-25 22:07:53 - experiment.static_experiment - INFO - Configuration: {'scenario': 'static', 'noise_level': 0.01}

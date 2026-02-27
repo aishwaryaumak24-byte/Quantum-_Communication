@@ -5,6 +5,7 @@ Tests RL agent on static (unchanging) channel conditions
 
 import sys
 from pathlib import Path
+import re
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 import numpy as np
@@ -15,6 +16,37 @@ from evaluation.baseline import StaticProtocol, GreedyProtocol, ThresholdBasedPr
 from evaluation.evaluator import ComparisonEvaluator
 from utils.logger import ExperimentLogger
 from utils.helpers import save_results, plot_training_curve, print_section
+
+
+def _find_resume_model_path(save_root: Path) -> tuple[Path | None, int | None]:
+    """Find latest checkpoint to resume from, else best model.
+
+    Returns:
+        (model_path, completed_timesteps)
+        completed_timesteps is available for checkpoint models.
+    """
+    checkpoints_dir = save_root / 'checkpoints'
+    best_model_path = save_root / 'best_model' / 'best_model.zip'
+
+    latest_checkpoint = None
+    max_steps = -1
+
+    if checkpoints_dir.exists():
+        for checkpoint in checkpoints_dir.glob('rl_model_*_steps.zip'):
+            match = re.search(r'rl_model_(?:interrupted_)?(\d+)_steps\.zip$', checkpoint.name)
+            if match:
+                steps = int(match.group(1))
+                if steps > max_steps:
+                    max_steps = steps
+                    latest_checkpoint = checkpoint
+
+    if latest_checkpoint is not None:
+        return latest_checkpoint, max_steps
+
+    if best_model_path.exists():
+        return best_model_path, None
+
+    return None, 0
 
 
 def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
@@ -55,10 +87,37 @@ def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
     # Create and train RL agent
     print("Creating RL agent...")
     agent = RLAgent(env, rl_config)
+
+    save_root = Path('results/model/static')
+    resume_model_path, completed_timesteps = _find_resume_model_path(save_root)
+    resume_training = resume_model_path is not None
+
+    if resume_training:
+        print(f"Resuming from saved model: {resume_model_path}")
+        agent.load(str(resume_model_path))
+    else:
+        print("No saved model found. Starting fresh training.")
     
     print("Training RL agent...")
-    training_timesteps = rl_config.get('training', {}).get('total_timesteps', 50000)
-    agent.train(timesteps=training_timesteps, save_path='results/model/static')
+    target_total_timesteps = rl_config.get('training', {}).get('total_timesteps', 50000)
+
+    if resume_training and completed_timesteps is not None:
+        remaining_timesteps = max(0, target_total_timesteps - completed_timesteps)
+        print(
+            f"Target total timesteps: {target_total_timesteps} | "
+            f"Completed: {completed_timesteps} | Remaining: {remaining_timesteps}"
+        )
+    else:
+        remaining_timesteps = target_total_timesteps
+
+    if remaining_timesteps > 0:
+        agent.train(
+            timesteps=remaining_timesteps,
+            save_path='results/model/static',
+            reset_num_timesteps=not resume_training
+        )
+    else:
+        print("Target total timesteps already reached. Skipping training.")
     
     # Create baseline strategies
     baselines = [
