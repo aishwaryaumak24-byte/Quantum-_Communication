@@ -168,6 +168,11 @@ python run.py --mode evaluate \
     --model_path results/model/rl_agent \
     --num_episodes 100
 ```
+``` 
+new command to run
+python run.py --mode evaluate --model_path results/model/static/best_model/best_model.zip --num_episodes 50
+```
+
 
 ---
 

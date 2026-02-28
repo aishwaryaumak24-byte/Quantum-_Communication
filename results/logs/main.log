@@ -1,0 +1,15 @@
+2026-02-28 15:52:56 - quantum_rl - INFO - Starting Quantum Communication RL Project
+2026-02-28 15:52:56 - quantum_rl - INFO - Loaded simulation config: config/simulation_config.yaml
+2026-02-28 15:52:56 - quantum_rl - INFO - Loaded RL config: config/rl_config.yaml
+2026-02-28 15:52:56 - quantum_rl - INFO - Quantum environment initialized
+2026-02-28 15:53:00 - quantum_rl - INFO - RL agent initialized
+2026-02-28 15:53:00 - quantum_rl - INFO - Loading model for evaluation...
+2026-02-28 18:08:26 - quantum_rl - INFO - Starting Quantum Communication RL Project
+2026-02-28 18:08:26 - quantum_rl - INFO - Loaded simulation config: config/simulation_config.yaml
+2026-02-28 18:08:26 - quantum_rl - INFO - Loaded RL config: config/rl_config.yaml
+2026-02-28 18:08:26 - quantum_rl - INFO - Quantum environment initialized
+2026-02-28 18:08:30 - quantum_rl - INFO - RL agent initialized
+2026-02-28 18:08:30 - quantum_rl - INFO - Loading model for evaluation...
+2026-02-28 18:41:37 - quantum_rl - INFO - Evaluation complete
+2026-02-28 18:41:37 - quantum_rl - INFO - Results: {'mean_reward': 283.4240063537285, 'std_reward': 307.9981599437834, 'min_reward': -0.009999999776482582, 'max_reward': 945.8370175361633, 'mean_fidelity': 0.16485999524593353, 'std_fidelity': 0.19173075258731842, 'min_fidelity': 0.0, 'max_fidelity': 0.5230001211166382, 'mean_success_rate': 0.06456389926925821, 'std_success_rate': 0.061091559894142965, 'mean_episode_length': 256.44, 'std_episode_length': 238.5935590077821, 'num_episodes': 50}
+2026-02-28 18:41:37 - quantum_rl - INFO - Execution complete

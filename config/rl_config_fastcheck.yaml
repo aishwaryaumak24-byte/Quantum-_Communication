@@ -1,0 +1,57 @@
+# Fast-check profile for quick validation on laptop/battery
+
+algorithm: "PPO"
+
+training:
+  total_timesteps: 30000
+  eval_freq: 3000
+  save_freq: 6000
+  n_eval_episodes: 3
+  learning_rate: 0.00015
+  batch_size: 64
+  n_epochs: 6
+
+ppo:
+  n_steps: 512
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.002
+  vf_coef: 0.6
+  max_grad_norm: 0.5
+
+network:
+  policy_type: "MlpPolicy"
+  net_arch:
+    - 128
+    - 128
+  activation: "tanh"
+
+exploration:
+  exploration_fraction: 0.05
+  exploration_initial_eps: 1.0
+  exploration_final_eps: 0.05
+
+reward:
+  fidelity_weight: 2.0
+  throughput_weight: 0.2
+  latency_weight: -0.1
+  energy_weight: -0.05
+  success_rate_weight: 1.2
+
+action_space:
+  type: "discrete"
+  num_actions: 4
+
+observation_space:
+  include_node_state: true
+  include_channel_state: true
+  include_entanglement_state: true
+  include_buffer_state: true
+  normalization: true
+
+advanced:
+  use_tensorboard: true
+  verbose: 1
+  device: "auto"
+  seed: 42

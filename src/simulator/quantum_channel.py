@@ -42,6 +42,7 @@ class QuantumChannel:
         
         # Simulator
         self.simulator = AerSimulator()
+        self._active_noise_model_id = None
         
     def reset(self, num_nodes: int) -> np.ndarray:
         """
@@ -120,7 +121,10 @@ class QuantumChannel:
         
         # Simulate with noise
         if noise_model is not None:
-            self.simulator.set_options(noise_model=noise_model.get_qiskit_noise_model())
+            noise_id = id(noise_model)
+            if noise_id != self._active_noise_model_id:
+                self.simulator.set_options(noise_model=noise_model.get_qiskit_noise_model())
+                self._active_noise_model_id = noise_id
         
         # Add channel effects
         distance_idx = min(node_a, node_b)

@@ -6,6 +6,7 @@ Tests RL agent on static (unchanging) channel conditions
 import sys
 from pathlib import Path
 import re
+import argparse
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 import numpy as np
@@ -50,7 +51,9 @@ def _find_resume_model_path(save_root: Path) -> tuple[Path | None, int | None]:
 
 
 def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
-                         rl_config_path: str = 'config/rl_config.yaml'):
+                         rl_config_path: str = 'config/rl_config.yaml',
+                         num_eval_episodes: int = 100,
+                         save_root_dir: str = 'results/model/static'):
     """
     Run experiment with static channel conditions
     
@@ -88,7 +91,7 @@ def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
     print("Creating RL agent...")
     agent = RLAgent(env, rl_config)
 
-    save_root = Path('results/model/static')
+    save_root = Path(save_root_dir)
     resume_model_path, completed_timesteps = _find_resume_model_path(save_root)
     resume_training = resume_model_path is not None
 
@@ -113,7 +116,7 @@ def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
     if remaining_timesteps > 0:
         agent.train(
             timesteps=remaining_timesteps,
-            save_path='results/model/static',
+            save_path=str(save_root),
             reset_num_timesteps=not resume_training
         )
     else:
@@ -132,7 +135,7 @@ def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
     results_df = evaluator.compare_strategies(
         agent, 
         baselines,
-        num_episodes=100,
+        num_episodes=num_eval_episodes,
         save_path='results/tables/static_comparison.csv'
     )
     
@@ -155,4 +158,20 @@ def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
 
 
 if __name__ == "__main__":
-    run_static_experiment()
+    parser = argparse.ArgumentParser(description='Run static scenario experiment')
+    parser.add_argument('--sim_config', type=str, default='config/simulation_config.yaml',
+                        help='Path to simulation config file')
+    parser.add_argument('--rl_config', type=str, default='config/rl_config.yaml',
+                        help='Path to RL config file')
+    parser.add_argument('--num_eval_episodes', type=int, default=100,
+                        help='Number of episodes for strategy comparison')
+    parser.add_argument('--save_root', type=str, default='results/model/static',
+                        help='Directory for model checkpoints and best model')
+
+    cli_args = parser.parse_args()
+    run_static_experiment(
+        config_path=cli_args.sim_config,
+        rl_config_path=cli_args.rl_config,
+        num_eval_episodes=cli_args.num_eval_episodes,
+        save_root_dir=cli_args.save_root
+    )

@@ -44,6 +44,7 @@ class DepolarizingNoise(NoiseModel):
             rate: Depolarizing rate (probability)
         """
         self.rate = rate
+        self._cached_qiskit_noise_model = None
         
     def apply_noise(self, state: np.ndarray) -> np.ndarray:
         """
@@ -61,6 +62,9 @@ class DepolarizingNoise(NoiseModel):
     
     def get_qiskit_noise_model(self) -> QiskitNoiseModel:
         """Get Qiskit depolarizing noise model"""
+        if self._cached_qiskit_noise_model is not None:
+            return self._cached_qiskit_noise_model
+
         noise_model = QiskitNoiseModel()
         
         # Add depolarizing error to single-qubit gates
@@ -70,8 +74,9 @@ class DepolarizingNoise(NoiseModel):
         # Add depolarizing error to two-qubit gates
         error_2q = depolarizing_error(self.rate * 2, 2)
         noise_model.add_all_qubit_quantum_error(error_2q, ['cx', 'cz', 'swap'])
-        
-        return noise_model
+
+        self._cached_qiskit_noise_model = noise_model
+        return self._cached_qiskit_noise_model
     
     def __repr__(self):
         return f"DepolarizingNoise(rate={self.rate})"

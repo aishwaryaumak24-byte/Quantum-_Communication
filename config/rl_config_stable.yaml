@@ -1,0 +1,58 @@
+# Stable training-oriented RL configuration
+
+algorithm: "PPO"
+
+training:
+  total_timesteps: 150000
+  eval_freq: 5000
+  save_freq: 10000
+  n_eval_episodes: 5
+  learning_rate: 0.0001
+  batch_size: 64
+  n_epochs: 10
+
+ppo:
+  n_steps: 1024
+  gamma: 0.995
+  gae_lambda: 0.95
+  clip_range: 0.15
+  ent_coef: 0.001
+  vf_coef: 0.7
+  max_grad_norm: 0.5
+
+network:
+  policy_type: "MlpPolicy"
+  net_arch:
+    - 256
+    - 256
+    - 128
+  activation: "tanh"
+
+exploration:
+  exploration_fraction: 0.05
+  exploration_initial_eps: 1.0
+  exploration_final_eps: 0.05
+
+reward:
+  fidelity_weight: 2.0
+  throughput_weight: 0.2
+  latency_weight: -0.1
+  energy_weight: -0.05
+  success_rate_weight: 1.5
+
+action_space:
+  type: "discrete"
+  num_actions: 4
+
+observation_space:
+  include_node_state: true
+  include_channel_state: true
+  include_entanglement_state: true
+  include_buffer_state: true
+  normalization: true
+
+advanced:
+  use_tensorboard: true
+  verbose: 1
+  device: "auto"
+  seed: 42
