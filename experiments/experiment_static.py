@@ -53,7 +53,8 @@ def _find_resume_model_path(save_root: Path) -> tuple[Path | None, int | None]:
 def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
                          rl_config_path: str = 'config/rl_config.yaml',
                          num_eval_episodes: int = 100,
-                         save_root_dir: str = 'results/model/static'):
+                         save_root_dir: str = 'results/model/static',
+                         static_gate_error_rate: float | None = None):
     """
     Run experiment with static channel conditions
     
@@ -73,10 +74,12 @@ def run_static_experiment(config_path: str = 'config/simulation_config.yaml',
     with open(rl_config_path, 'r') as f:
         rl_config = yaml.safe_load(f)
     
-    # Modify config for static scenario
+    # Enforce static scenario (fixed noise model).
+    # Keep configured gate error rate unless explicitly overridden.
     sim_config['noise']['enable_noise'] = True
     sim_config['noise']['noise_model'] = 'depolarizing'
-    sim_config['noise']['gate_error_rate'] = 0.01  # Fixed error rate
+    if static_gate_error_rate is not None:
+        sim_config['noise']['gate_error_rate'] = static_gate_error_rate
     
     logger.start_experiment({
         'scenario': 'static',
@@ -167,11 +170,14 @@ if __name__ == "__main__":
                         help='Number of episodes for strategy comparison')
     parser.add_argument('--save_root', type=str, default='results/model/static',
                         help='Directory for model checkpoints and best model')
+    parser.add_argument('--static_gate_error_rate', type=float, default=None,
+                        help='Optional fixed gate error rate override for static scenario')
 
     cli_args = parser.parse_args()
     run_static_experiment(
         config_path=cli_args.sim_config,
         rl_config_path=cli_args.rl_config,
         num_eval_episodes=cli_args.num_eval_episodes,
-        save_root_dir=cli_args.save_root
+        save_root_dir=cli_args.save_root,
+        static_gate_error_rate=cli_args.static_gate_error_rate
     )

@@ -1,0 +1,47 @@
+# Curriculum Stage-1 (easy): learn core behavior first
+
+network:
+  num_nodes: 4
+  topology: "linear"
+  distance_range: [5, 20]
+
+quantum_channel:
+  fiber_loss_coefficient: 0.05
+  depolarizing_rate: 0.004
+  dephasing_rate: 0.002
+
+noise:
+  enable_noise: true
+  noise_model: "depolarizing"
+  gate_error_rate: 0.0005
+  measurement_error_rate: 0.005
+
+repeater:
+  enable_repeaters: true
+  max_repeaters: 2
+  swap_success_probability: 0.99
+  memory_coherence_time: 1.0
+
+entanglement:
+  initial_fidelity: 0.99
+  target_fidelity: 0.90
+  purification_enabled: true
+  distillation_rounds: 1
+
+simulation:
+  time_slots: 500
+  max_episode_steps: 200
+  random_seed: 42
+  parallel_simulations: 1
+
+action_space:
+  num_actions: 4
+
+reward:
+  fidelity_weight: 3.0
+
+metrics:
+  track_fidelity: true
+  track_throughput: true
+  track_latency: true
+  track_success_rate: true
