@@ -47,3 +47,20 @@
 2026-03-12 22:54:38 - quantum_rl - INFO - Evaluation complete
 2026-03-12 22:54:38 - quantum_rl - INFO - Results: {'mean_reward': 156.26312938110902, 'std_reward': 223.91655109792518, 'min_reward': -0.009999999776482582, 'max_reward': 918.3366895318031, 'mean_fidelity': 0.07530000060796738, 'std_fidelity': 0.165997713804245, 'min_fidelity': 0.0, 'max_fidelity': 0.75, 'mean_success_rate': 0.06137478381939653, 'std_success_rate': 0.06755528942609787, 'mean_episode_length': 91.33, 'std_episode_length': 115.4318894413498, 'num_episodes': 100}
 2026-03-12 22:54:38 - quantum_rl - INFO - Execution complete
+2026-03-20 13:49:58 - quantum_rl - INFO - Starting Quantum Communication RL Project
+2026-03-20 13:49:58 - quantum_rl - INFO - Loaded simulation config: config/simulation_config_stable.yaml
+2026-03-20 13:49:58 - quantum_rl - INFO - Loaded RL config: config/rl_config_stable.yaml
+2026-03-20 13:49:58 - quantum_rl - INFO - Quantum environment initialized
+2026-03-20 13:50:04 - quantum_rl - INFO - RL agent initialized
+2026-03-20 13:50:04 - quantum_rl - INFO - Starting training...
+2026-03-20 15:31:08 - quantum_rl - INFO - Model saved to results/model/stable_v2/best_model/best_model
+2026-03-20 15:31:08 - quantum_rl - INFO - Execution complete
+2026-03-20 15:31:23 - quantum_rl - INFO - Starting Quantum Communication RL Project
+2026-03-20 15:31:23 - quantum_rl - INFO - Loaded simulation config: config/simulation_config_stable.yaml
+2026-03-20 15:31:23 - quantum_rl - INFO - Loaded RL config: config/rl_config_stable.yaml
+2026-03-20 15:31:23 - quantum_rl - INFO - Quantum environment initialized
+2026-03-20 15:31:26 - quantum_rl - INFO - RL agent initialized
+2026-03-20 15:31:26 - quantum_rl - INFO - Loading model for evaluation...
+2026-03-20 15:41:11 - quantum_rl - INFO - Evaluation complete
+2026-03-20 15:41:11 - quantum_rl - INFO - Results: {'mean_reward': 131.03858698902653, 'std_reward': 204.29052709191214, 'min_reward': -0.009999999776482582, 'max_reward': 746.7591870129108, 'mean_fidelity': 0.04733333736658096, 'std_fidelity': 0.1295635849237442, 'min_fidelity': 0.0, 'max_fidelity': 0.5899999737739563, 'mean_success_rate': 0.05506168986460616, 'std_success_rate': 0.06947795609022679, 'mean_episode_length': 76.29, 'std_episode_length': 105.50538327497797, 'num_episodes': 100}
+2026-03-20 15:41:11 - quantum_rl - INFO - Execution complete
