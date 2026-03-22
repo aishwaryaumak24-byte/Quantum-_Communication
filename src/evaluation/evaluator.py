@@ -151,32 +151,54 @@ class ComparisonEvaluator:
         results = []
         
         # Evaluate RL agent
-        print("Evaluating RL Agent...")
-        rl_evaluator = Evaluator(self.env, rl_agent)
-        rl_results = rl_evaluator.evaluate(num_episodes, verbose=False)
-        rl_results['strategy'] = 'RL Agent (Proposed)'
-        results.append(rl_results)
+        try:
+            print("Evaluating RL Agent...")
+            rl_evaluator = Evaluator(self.env, rl_agent)
+            rl_results = rl_evaluator.evaluate(num_episodes, verbose=False)
+            rl_results['strategy'] = 'RL Agent (Proposed)'
+            results.append(rl_results)
+        except Exception as e:
+            print(f"ERROR: Failed to evaluate RL Agent: {e}")
+            return pd.DataFrame()  # Return empty DataFrame on failure
         
         # Evaluate baselines
         for baseline in baseline_strategies:
-            print(f"Evaluating {baseline.get_name()}...")
-            baseline_evaluator = Evaluator(self.env, baseline)
-            baseline_results = baseline_evaluator.evaluate(num_episodes, verbose=False)
-            baseline_results['strategy'] = baseline.get_name()
-            results.append(baseline_results)
+            try:
+                print(f"Evaluating {baseline.get_name()}...")
+                baseline_evaluator = Evaluator(self.env, baseline)
+                baseline_results = baseline_evaluator.evaluate(num_episodes, verbose=False)
+                baseline_results['strategy'] = baseline.get_name()
+                results.append(baseline_results)
+            except Exception as e:
+                print(f"ERROR: Failed to evaluate {baseline.get_name()}: {e}")
+                continue  # Skip this baseline and continue
+        
+        if not results:
+            print("ERROR: No evaluation results obtained.")
+            return pd.DataFrame()
         
         # Create DataFrame
         df = pd.DataFrame(results)
         
-        # Reorder columns
-        cols = ['strategy', 'mean_reward', 'mean_fidelity', 'mean_success_rate', 
-                'mean_episode_length', 'std_reward', 'std_fidelity', 'std_success_rate']
-        df = df[cols]
+        # Reorder columns - ensure all columns exist before selecting
+        desired_cols = ['strategy', 'mean_reward', 'mean_fidelity', 'mean_success_rate', 
+                        'mean_episode_length', 'std_reward', 'std_fidelity', 'std_success_rate']
+        available_cols = [col for col in desired_cols if col in df.columns]
+        
+        if not available_cols:
+            print(f"ERROR: No expected columns found in DataFrame.")
+            print(f"Available columns: {list(df.columns)}")
+            return df
+        
+        df = df[available_cols]
         
         # Save if requested
         if save_path:
-            df.to_csv(save_path, index=False)
-            print(f"\nResults saved to {save_path}")
+            try:
+                df.to_csv(save_path, index=False)
+                print(f"\nResults saved to {save_path}")
+            except Exception as e:
+                print(f"ERROR: Failed to save results to {save_path}: {e}")
         
         # Print comparison table
         print("\n=== Strategy Comparison ===")
@@ -192,6 +214,24 @@ class ComparisonEvaluator:
             df: DataFrame with comparison results
             save_path: Optional path to save plots
         """
+        # Validate DataFrame
+        if df.empty:
+            print("ERROR: DataFrame is empty. Cannot generate plots.")
+            return
+        
+        required_columns = ['strategy', 'mean_reward', 'std_reward', 'mean_fidelity', 
+                           'std_fidelity', 'mean_success_rate', 'std_success_rate', 
+                           'mean_episode_length', 'std_episode_length']
+        
+        missing_cols = [col for col in required_columns if col not in df.columns]
+        if missing_cols:
+            print(f"ERROR: Missing columns in DataFrame: {missing_cols}")
+            print(f"Available columns: {list(df.columns)}")
+            return
+        
+        # Reset index to avoid indexing issues
+        df = df.reset_index(drop=True)
+        
         fig, axes = plt.subplots(2, 2, figsize=(14, 10))
         
         # Set style
@@ -199,14 +239,15 @@ class ComparisonEvaluator:
         
         # 1. Mean Reward comparison
         ax = axes[0, 0]
-        strategies = df['strategy']
-        rewards = df['mean_reward']
-        errors = df['std_reward']
+        strategies = df['strategy'].values.tolist()  # Convert to list
+        rewards = df['mean_reward'].values  # Use .values for numpy array
+        errors = df['std_reward'].values
         
         bars = ax.bar(range(len(strategies)), rewards, yerr=errors, 
                      capsize=5, alpha=0.7, color='skyblue', edgecolor='navy')
-        bars[0].set_color('green')  # Highlight RL agent
-        bars[0].set_alpha(0.9)
+        if len(bars) > 0:
+            bars[0].set_color('green')  # Highlight RL agent
+            bars[0].set_alpha(0.9)
         
         ax.set_xticks(range(len(strategies)))
         ax.set_xticklabels(strategies, rotation=45, ha='right')
@@ -216,13 +257,14 @@ class ComparisonEvaluator:
         
         # 2. Mean Fidelity comparison
         ax = axes[0, 1]
-        fidelities = df['mean_fidelity']
-        errors = df['std_fidelity']
+        fidelities = df['mean_fidelity'].values
+        errors = df['std_fidelity'].values
         
         bars = ax.bar(range(len(strategies)), fidelities, yerr=errors,
                      capsize=5, alpha=0.7, color='lightcoral', edgecolor='darkred')
-        bars[0].set_color('green')
-        bars[0].set_alpha(0.9)
+        if len(bars) > 0:
+            bars[0].set_color('green')
+            bars[0].set_alpha(0.9)
         
         ax.set_xticks(range(len(strategies)))
         ax.set_xticklabels(strategies, rotation=45, ha='right')
@@ -234,13 +276,14 @@ class ComparisonEvaluator:
         
         # 3. Success Rate comparison
         ax = axes[1, 0]
-        success_rates = df['mean_success_rate']
-        errors = df['std_success_rate']
+        success_rates = df['mean_success_rate'].values
+        errors = df['std_success_rate'].values
         
         bars = ax.bar(range(len(strategies)), success_rates, yerr=errors,
                      capsize=5, alpha=0.7, color='lightgreen', edgecolor='darkgreen')
-        bars[0].set_color('green')
-        bars[0].set_alpha(0.9)
+        if len(bars) > 0:
+            bars[0].set_color('green')
+            bars[0].set_alpha(0.9)
         
         ax.set_xticks(range(len(strategies)))
         ax.set_xticklabels(strategies, rotation=45, ha='right')
@@ -251,13 +294,14 @@ class ComparisonEvaluator:
         
         # 4. Episode Length comparison
         ax = axes[1, 1]
-        lengths = df['mean_episode_length']
-        errors = df['std_episode_length']
+        lengths = df['mean_episode_length'].values
+        errors = df['std_episode_length'].values
         
         bars = ax.bar(range(len(strategies)), lengths, yerr=errors,
                      capsize=5, alpha=0.7, color='plum', edgecolor='purple')
-        bars[0].set_color('green')
-        bars[0].set_alpha(0.9)
+        if len(bars) > 0:
+            bars[0].set_color('green')
+            bars[0].set_alpha(0.9)
         
         ax.set_xticks(range(len(strategies)))
         ax.set_xticklabels(strategies, rotation=45, ha='right')
@@ -268,10 +312,16 @@ class ComparisonEvaluator:
         plt.tight_layout()
         
         if save_path:
-            plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            print(f"Plot saved to {save_path}")
+            try:
+                plt.savefig(save_path, dpi=300, bbox_inches='tight')
+                print(f"Plot saved to {save_path}")
+            except Exception as e:
+                print(f"ERROR: Failed to save plot to {save_path}: {e}")
         
-        plt.show()
+        try:
+            plt.show()
+        except Exception as e:
+            print(f"WARNING: Could not display plot: {e}")
     
     def statistical_significance_test(self, df: pd.DataFrame) -> pd.DataFrame:
         """
