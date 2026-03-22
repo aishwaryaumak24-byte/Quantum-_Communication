@@ -252,7 +252,7 @@ class ComparisonEvaluator:
         # 4. Episode Length comparison
         ax = axes[1, 1]
         lengths = df['mean_episode_length']
-        errors = df['std_episode_length']
+        errors = df['std_episode_length'] if 'std_episode_length' in df.columns else None
         
         bars = ax.bar(range(len(strategies)), lengths, yerr=errors,
                      capsize=5, alpha=0.7, color='plum', edgecolor='purple')
