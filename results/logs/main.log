@@ -73,3 +73,4 @@
 2026-03-22 22:38:37 - quantum_rl - INFO - Evaluation complete
 2026-03-22 22:38:37 - quantum_rl - INFO - Results: {'mean_reward': 167.86663764482364, 'std_reward': 254.24797296181518, 'min_reward': -0.009999999776482582, 'max_reward': 884.375850558281, 'mean_fidelity': 0.07256666570901871, 'std_fidelity': 0.16747792065143585, 'min_fidelity': 0.0, 'max_fidelity': 0.6016667485237122, 'mean_success_rate': 0.06456775257314257, 'std_success_rate': 0.07301617227050745, 'mean_episode_length': 84.72, 'std_episode_length': 113.50983041129079, 'num_episodes': 100}
 2026-03-22 22:38:37 - quantum_rl - INFO - Execution complete
+2026-03-26 22:10:00 - quantum_rl - INFO - Starting Quantum Communication RL Project
