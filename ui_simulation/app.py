@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, List, Tuple
 import sys
+import time
 
 import numpy as np
 import pandas as pd
@@ -129,6 +130,9 @@ def init_state() -> None:
         "policy_mode": "Heuristic",
         "episode_reward": 0.0,
         "episode_steps": 0,
+        "auto_run": False,
+        "auto_delay": 0.25,
+        "auto_batch_size": 1,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -387,6 +391,33 @@ def run_multiple_steps(n_steps: int) -> None:
         run_one_step()
 
 
+def start_auto_run() -> None:
+    """Enable continuous automatic simulation."""
+    st.session_state.auto_run = True
+
+
+def stop_auto_run() -> None:
+    """Disable continuous automatic simulation."""
+    st.session_state.auto_run = False
+
+
+def auto_run_tick() -> None:
+    """Advance the simulation automatically and rerun the app."""
+    env = st.session_state.env
+    if env is None or st.session_state.done:
+        st.session_state.auto_run = False
+        return
+
+    run_multiple_steps(int(st.session_state.auto_batch_size))
+
+    if st.session_state.done:
+        st.session_state.auto_run = False
+        return
+
+    time.sleep(float(st.session_state.auto_delay))
+    st.rerun()
+
+
 def main() -> None:
     init_state()
 
@@ -416,6 +447,21 @@ def main() -> None:
             "Policy Mode",
             options=["Heuristic", "Random", "Trained Model"],
             index=0,
+        )
+
+        st.session_state.auto_delay = st.slider(
+            "Auto Run Delay (sec)",
+            min_value=0.05,
+            max_value=2.0,
+            value=float(st.session_state.auto_delay),
+            step=0.05,
+        )
+        st.session_state.auto_batch_size = st.slider(
+            "Auto Run Steps per Tick",
+            min_value=1,
+            max_value=20,
+            value=int(st.session_state.auto_batch_size),
+            step=1,
         )
 
         model_path = st.selectbox(
@@ -457,6 +503,16 @@ def main() -> None:
                 except Exception as exc:
                     st.error(f"Failed to load model: {exc}")
 
+        auto_col_1, auto_col_2 = st.columns(2)
+        with auto_col_1:
+            if st.button("Start Auto Run", use_container_width=True):
+                start_auto_run()
+        with auto_col_2:
+            if st.button("Stop Auto Run", use_container_width=True):
+                stop_auto_run()
+
+        st.caption(f"Auto run: {'ON' if st.session_state.auto_run else 'OFF'}")
+
         st.divider()
         manual_action = st.slider("Manual Action", min_value=0, max_value=9, value=1, step=1)
         col_c, col_d, col_e = st.columns(3)
@@ -473,6 +529,10 @@ def main() -> None:
     env = st.session_state.env
     if env is None:
         st.info("Click Initialize in the sidebar to start simulation.")
+        return
+
+    if st.session_state.auto_run and not st.session_state.done:
+        auto_run_tick()
         return
 
     info = st.session_state.last_info

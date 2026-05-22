@@ -26,8 +26,15 @@ streamlit run ui_simulation/app.py
    - **Heuristic** for stable visual demo
    - **Random** for baseline behavior
    - **Trained Model** after loading model
-3. Use **Step** or **Run 20** to simulate communication.
-4. Observe metrics + entanglement table update in real time.
+3. Use **Step** or **Run 20** for manual simulation, or click **Start Auto Run** to let the UI simulate continuously.
+4. Use **Stop Auto Run** to pause automatic progression.
+5. Observe metrics + entanglement table update in real time.
+
+## Automatic Mode
+
+- **Auto Run Delay (sec)** controls how fast the simulation advances.
+- **Auto Run Steps per Tick** controls how many environment steps are executed on each refresh.
+- Auto mode works with **Heuristic**, **Random**, and **Trained Model** policies.
 
 ## Notes
 
